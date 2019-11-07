@@ -1,9 +1,11 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import { withFormik, Form, Field } from "formik";
 import * as Yup from "yup";
 import axios from 'axios';
 
 const LoginForm = ({values, touched, errors}) => {
+    const [users, setUsers] = useState([]);
+    
     return(
         <Form>
             <label>
@@ -50,15 +52,15 @@ const LoginForm = ({values, touched, errors}) => {
                 &nbsp;
                 <Field
                     className='level-select'
-                    name='level' 
+                    name='role' 
                     component="select">
-                    <option>Choose Your Level</option>
-                    <option value="beginner">beginner</option>
-                    <option value="intermediate">intermediate</option>
-                    <option value="advanced">advanced</option>
+                    <option>choose your role</option>
+                    <option value="frontend dev">frontend dev</option>
+                    <option value="backend dev">backend dev</option>
+                    <option value="stylist">stylist</option>
                 </Field>
-                {touched.level && errors.level && (
-                    <p>{errors.level}</p>
+                {touched.role && errors.role && (
+                    <p>{errors.role}</p>
                 )}
             </label>
             <label  className='space'>
@@ -68,7 +70,8 @@ const LoginForm = ({values, touched, errors}) => {
                     required
                     name='tos' 
                     type='checkbox'
-                    placeholder=''
+                    //DO I NEED THE LINE BELOW????
+                    checked={values.checkbox}
                     //value={values.}
                     />
             </label>
@@ -83,7 +86,7 @@ const LoginForm = ({values, touched, errors}) => {
                     //value={values.}
                     />
             </label>
-            <button>Submit</button>
+            <button type='submit'>Submit</button>
         </Form>
     );
 };
@@ -103,10 +106,16 @@ const FormikLoginForm = withFormik({
         name: Yup.string().required('THIS IS REQUIRED!!'),
         email: Yup.string().email().required('I need your email and it must be valid.'),
         password: Yup.string().min(6).required('At least six characters please'),
-        level: Yup.string().oneOf(["beginner", "intermediate", "advanced"]).required("PLEASE select one")
+        role: Yup.string().oneOf(["stylist", "frontend dev", "backend dev"]).required("PLEASE select one")
     }),
-    handleSubmit(values) {
-        console.log(values)
+    handleSubmit(values, {}) {
+        axios.post('https://reqres.in/api/users/', values)
+            .then(res=>{
+                console.log(res.data)
+            })
+            .catch(err=>{
+                console.log(err)
+            });
     }
 })(LoginForm);
 
