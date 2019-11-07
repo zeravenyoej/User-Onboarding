@@ -69,3 +69,9 @@ button {
 p {
   color: black;
 }
+
+.returnedData {
+  background-image: url('./images/background.png');
+  object-fit: cover;
+  font-weight: 800;
+}

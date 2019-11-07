@@ -3,10 +3,17 @@ import { withFormik, Form, Field } from "formik";
 import * as Yup from "yup";
 import axios from 'axios';
 
-const LoginForm = ({values, touched, errors}) => {
+//YOU DON'T NEED VALUES TO BE DECONSTRUCTED IN THE LINE BELOW?
+const LoginForm = ({ touched, errors, status}) => {
     const [users, setUsers] = useState([]);
-    
+
+    useEffect(()=> {
+        status && setUsers(users=>[...users, status])
+    }, [status]);
+
+
     return(
+    <div>
         <Form>
             <label>
                 Name: 
@@ -15,11 +22,8 @@ const LoginForm = ({values, touched, errors}) => {
                     name='name' 
                     type='text' 
                     placeholder='name'
-                    //value={values.name}
                     />
-                {touched.name && errors.name && (
-                    <p>{errors.name}</p>
-                )}
+                {touched.name && errors.name && <p>{errors.name}</p>}
             </label>
             <label>
                 Email: 
@@ -28,11 +32,8 @@ const LoginForm = ({values, touched, errors}) => {
                     name='email' 
                     type='text' 
                     placeholder='email'
-                    //value={values.email}
                     />
-                    {touched.email && errors.email && (
-                        <p>{errors.email}</p>
-                    )}
+                    {touched.email && errors.email && <p>{errors.email}</p>}
             </label>
             <label>
                 Password:
@@ -41,11 +42,8 @@ const LoginForm = ({values, touched, errors}) => {
                     name='password' 
                     type='password' 
                     placeholder='password'
-                    //value={values.password}
                     />
-                    {touched.password && errors.password && (
-                        <p>{errors.password}</p>
-                    )}
+                    {touched.password && errors.password && <p>{errors.password}</p>}
             </label>
             <label className='levelCont'>
                 Level:
@@ -59,21 +57,7 @@ const LoginForm = ({values, touched, errors}) => {
                     <option value="backend dev">backend dev</option>
                     <option value="stylist">stylist</option>
                 </Field>
-                {touched.role && errors.role && (
-                    <p>{errors.role}</p>
-                )}
-            </label>
-            <label  className='space'>
-                Terms of Service: 
-                &nbsp;
-                <Field
-                    required
-                    name='tos' 
-                    type='checkbox'
-                    //DO I NEED THE LINE BELOW????
-                    checked={values.checkbox}
-                    //value={values.}
-                    />
+                {touched.role && errors.role && <p>{errors.role}</p>}
             </label>
             <label>
                 Bio: 
@@ -83,11 +67,32 @@ const LoginForm = ({values, touched, errors}) => {
                     name='bio'
                     component='textarea' 
                     placeholder='Tell us about yourself'
-                    //value={values.}
+                    />
+            </label>
+            <label  className='space'>
+                Terms of Service: 
+                &nbsp;
+                <Field
+//WHY DOES CHRSITINA HAVE THAT LINE BELOW?
+                    //checked={values.vaccinations}
+                    required
+                    name='tos' 
+                    type='checkbox'
                     />
             </label>
             <button type='submit'>Submit</button>
         </Form>
+
+        {users.map(user=>(
+            <div className='returnedData' key={user.id}>
+                <p>Name: {user.name}</p>
+                <p>email: {user.email}</p>
+                <p>password: {user.password}</p>
+                <p>level: {user.level}</p>
+                <p>bio: {user.bio}</p>
+            </div>
+        ))}
+    </div>
     );
 };
 
@@ -98,20 +103,22 @@ const FormikLoginForm = withFormik({
             password: password || '',
             email: email || '',
             tos: tos || false,
-            level: level,
+            level: level || '',
             bio: bio || '',
         };
     },
     validationSchema: Yup.object().shape({
+//WHY DO SOME OF MY REQUIRED MESSAGES GET OVERWRITTEN?
         name: Yup.string().required('THIS IS REQUIRED!!'),
         email: Yup.string().email().required('I need your email and it must be valid.'),
         password: Yup.string().min(6).required('At least six characters please'),
         role: Yup.string().oneOf(["stylist", "frontend dev", "backend dev"]).required("PLEASE select one")
     }),
-    handleSubmit(values, {}) {
+    handleSubmit(values, {setStatus}) {
         axios.post('https://reqres.in/api/users/', values)
             .then(res=>{
-                console.log(res.data)
+                //console.log(res.data)
+                setStatus(res.data)
             })
             .catch(err=>{
                 console.log(err)
