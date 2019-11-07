@@ -3,28 +3,72 @@ import { withFormik, Form, Field } from "formik";
 import * as Yup from "yup";
 import axios from 'axios';
 
-const LoginForm = () => {
+const LoginForm = ({values}) => {
     return(
         <Form>
             <label>
                 Name: 
                 &nbsp;
-                <Field name='name' type='' placeholder='name'/>
+                <Field 
+                    name='name' 
+                    type='text' 
+                    placeholder='name'
+                    //value={values.name}
+                    />
             </label>
             <label>
                 Email: 
                 &nbsp;
-                <Field name='email' type='' placeholder='email'/>
+                <Field 
+                    name='email' 
+                    type='text' 
+                    placeholder='email'
+                    //value={values.email}
+                    />
             </label>
             <label>
                 Password:
                 &nbsp;
-                <Field name='password' type='' placeholder='password'/>
+                <Field 
+                    name='password' 
+                    type='password' 
+                    placeholder='password'
+                    //value={values.password}
+                    />
             </label>
-            <label>
+            <label className='levelCont'>
+                Level:
+                &nbsp;
+                <Field
+                    className='level-select'
+                    name='level' 
+                    component="select">
+                    <option>Choose Your Level</option>
+                    <option value="beginning">beginning</option>
+                    <option value="intermediate">intermediate</option>
+                    <option value="advanced">advanced</option>
+                </Field>
+            </label>
+            <label  className='space'>
                 Terms of Service: 
                 &nbsp;
-                <Field name='tos' type='' placeholder=''/>
+                <Field 
+                    name='tos' 
+                    type='checkbox'
+                    placeholder=''
+                    //value={values.}
+                    />
+            </label>
+            <label>
+                Bio: 
+                &nbsp;
+                <Field 
+                    className='space'
+                    name='bio'
+                    component='textarea' 
+                    placeholder='Tell us about yourself'
+                    //value={values.}
+                    />
             </label>
             <button>Submit</button>
         </Form>
@@ -32,13 +76,15 @@ const LoginForm = () => {
 };
 
 const FormikLoginForm = withFormik({
-    mapPropsToValues({name, password, email, tos}){
+    mapPropsToValues({name, password, email, tos, level, bio}){
         return{
             name: name || '',
             password: password || '',
             email: email || '',
-            tos: tos || false
-        }
+            tos: tos || false,
+            level: level,
+            bio: bio || '',
+        };
     },
     validationSchema: Yup.object().shape({
         email: Yup.string()
@@ -48,11 +94,9 @@ const FormikLoginForm = withFormik({
             .min(6)
             .required()
     }),
-
     handleSubmit(values) {
         console.log(values)
     }
-
 })(LoginForm);
 
 export default FormikLoginForm;
