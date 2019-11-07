@@ -3,7 +3,7 @@ import { withFormik, Form, Field } from "formik";
 import * as Yup from "yup";
 import axios from 'axios';
 
-const LoginForm = ({values}) => {
+const LoginForm = ({values, touched, errors}) => {
     return(
         <Form>
             <label>
@@ -15,6 +15,9 @@ const LoginForm = ({values}) => {
                     placeholder='name'
                     //value={values.name}
                     />
+                {touched.name && errors.name && (
+                    <p>{errors.name}</p>
+                )}
             </label>
             <label>
                 Email: 
@@ -25,6 +28,9 @@ const LoginForm = ({values}) => {
                     placeholder='email'
                     //value={values.email}
                     />
+                    {touched.email && errors.email && (
+                        <p>{errors.email}</p>
+                    )}
             </label>
             <label>
                 Password:
@@ -35,6 +41,9 @@ const LoginForm = ({values}) => {
                     placeholder='password'
                     //value={values.password}
                     />
+                    {touched.password && errors.password && (
+                        <p>{errors.password}</p>
+                    )}
             </label>
             <label className='levelCont'>
                 Level:
@@ -44,15 +53,19 @@ const LoginForm = ({values}) => {
                     name='level' 
                     component="select">
                     <option>Choose Your Level</option>
-                    <option value="beginning">beginning</option>
+                    <option value="beginner">beginner</option>
                     <option value="intermediate">intermediate</option>
                     <option value="advanced">advanced</option>
                 </Field>
+                {touched.level && errors.level && (
+                    <p>{errors.level}</p>
+                )}
             </label>
             <label  className='space'>
                 Terms of Service: 
                 &nbsp;
-                <Field 
+                <Field
+                    required
                     name='tos' 
                     type='checkbox'
                     placeholder=''
@@ -87,12 +100,10 @@ const FormikLoginForm = withFormik({
         };
     },
     validationSchema: Yup.object().shape({
-        email: Yup.string()
-            .email()
-            .required(),
-        password: Yup.string()
-            .min(6)
-            .required()
+        name: Yup.string().required('THIS IS REQUIRED!!'),
+        email: Yup.string().email().required('I need your email and it must be valid.'),
+        password: Yup.string().min(6).required('At least six characters please'),
+        level: Yup.string().oneOf(["beginner", "intermediate", "advanced"]).required("PLEASE select one")
     }),
     handleSubmit(values) {
         console.log(values)
